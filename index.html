@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAUSE DULU.</title>
+<style>
+  :root{
+    --bg:#f6f3ed;
+    --ink:#171717;
+    --muted:#77736b;
+    --card:#fffdf8;
+    --line:#ded9cf;
+    --accent:#ff6b4a;
+    --accent2:#ffd166;
+    --green:#65c18c;
+    --shadow:0 18px 50px rgba(25,20,10,.08);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg)}
+  body{display:flex;justify-content:center}
+  button,input,textarea{font:inherit}
+  button{cursor:pointer}
+  .app{width:min(100%,980px);min-height:100vh;padding:22px}
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .brand{font-weight:900;letter-spacing:-.04em;font-size:20px}
+  .progress-wrap{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px}
+  .progress{width:150px;height:7px;border-radius:99px;background:#e5e0d7;overflow:hidden}
+  .progress i{display:block;height:100%;width:16.66%;background:var(--accent);border-radius:99px;transition:.35s}
+  .screen{min-height:calc(100vh - 95px);display:flex;align-items:center;justify-content:center}
+  .card{width:min(760px,100%);background:var(--card);border:1px solid var(--line);border-radius:30px;padding:clamp(28px,6vw,64px);box-shadow:var(--shadow)}
+  .chapter{font-size:13px;font-weight:800;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:20px}
+  h1{font-size:clamp(42px,8vw,76px);line-height:.95;letter-spacing:-.065em;margin:0 0 22px}
+  h2{font-size:clamp(30px,5vw,48px);line-height:1;letter-spacing:-.045em;margin:0 0 16px}
+  p{font-size:18px;line-height:1.6;color:#444;margin:0 0 26px}
+  .sub{color:var(--muted);font-size:15px}
+  .choices{display:grid;gap:12px;margin:26px 0}
+  .choice{background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:17px 18px;text-align:left;transition:.2s}
+  .choice:hover{transform:translateY(-2px);border-color:#aaa}
+  .choice.selected{border-color:var(--accent);background:#fff3ef;box-shadow:0 0 0 3px rgba(255,107,74,.1)}
+  .choice strong{display:block;font-size:16px;margin-bottom:3px}
+  .choice span{font-size:13px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .value-grid{grid-template-columns:repeat(3,1fr)}
+  .value{min-height:100px;display:flex;align-items:flex-end}
+  .value.selected{background:#fff3ef;border-color:var(--accent)}
+  .counter{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:18px;padding:15px 18px;background:#fff;margin:9px 0}
+  .counter-name{font-weight:750}
+  .counter-controls{display:flex;align-items:center;gap:12px}
+  .circle{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:#fff}
+  .circle:hover{border-color:var(--accent)}
+  .num{min-width:24px;text-align:center;font-weight:800}
+  .bar-wrap{margin:28px 0}
+  .bar-label{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px}
+  .bar{height:13px;background:#e9e5dc;border-radius:99px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+  .big-number{font-size:76px;font-weight:900;letter-spacing:-.06em}
+  .total-ok{color:#24804e}
+  .total-bad{color:#c94b32}
+  textarea,input[type=text]{width:100%;border:1.5px solid var(--line);background:#fff;border-radius:16px;padding:15px 16px;outline:none}
+  textarea{min-height:100px;resize:vertical}
+  input:focus,textarea:focus{border-color:var(--accent)}
+  label{display:block;font-weight:750;margin:18px 0 8px}
+  .nav{display:flex;justify-content:space-between;gap:12px;margin-top:30px}
+  .btn{border:0;border-radius:16px;padding:14px 20px;font-weight:850}
+  .btn.primary{background:var(--ink);color:white}
+  .btn.primary:hover{background:#333}
+  .btn.secondary{background:transparent;border:1px solid var(--line)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .tag{display:inline-flex;padding:7px 10px;border-radius:99px;background:#f0ece3;color:#625e56;font-size:12px;font-weight:800;margin:3px}
+  .thief-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:24px 0}
+  .thief{border:1.5px solid var(--line);background:#fff;border-radius:18px;padding:18px 10px;text-align:center;min-height:90px}
+  .thief.selected{border-color:var(--accent);background:#fff3ef}
+  .thief .emoji{font-size:27px;display:block;margin-bottom:6px}
+  .tracker{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin:20px 0}
+  .day{padding:12px 5px;border-radius:13px;border:1px solid var(--line);background:#fff;text-align:center;font-size:12px}
+  .day.done{background:#e9f8ef;border-color:var(--green)}
+  .day button{display:block;margin:6px auto 0;border:0;background:transparent;font-size:20px}
+  .result{border:1px dashed #cfc8bb;border-radius:20px;padding:20px;background:#fff}
+  .footer-note{text-align:center;color:var(--muted);font-size:12px;margin-top:16px}
+
+  .question-block{margin:26px 0 34px;padding-bottom:4px}
+  .question-title{font-size:18px;font-weight:850;margin-bottom:3px}
+  .question-text{font-size:14px;color:var(--muted);margin:0 0 12px}
+  .answer-grid{gap:8px;margin:0}
+  .answer-grid .choice{padding:13px 15px}
+  .answer-letter{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#f0ece3;margin-right:10px;font-size:12px}
+  .answer-grid .choice.selected .answer-letter{background:var(--accent);color:#fff}
+  @media(max-width:620px){
+    .app{padding:12px}.card{border-radius:23px;padding:28px 22px}
+    .grid,.value-grid{grid-template-columns:1fr}
+    .thief-grid{grid-template-columns:repeat(2,1fr)}
+    .tracker{grid-template-columns:repeat(4,1fr)}
+    .progress{width:90px}
+    p{font-size:16px}
+  }
+
+  @media print{
+    body{background:#fff}
+    .app{width:100%;padding:0}
+    .topbar,.footer-note{display:none!important}
+    .screen{min-height:auto;display:block}
+    .card{box-shadow:none;border:0;width:100%;padding:20px}
+    .nav{display:none!important}
+    .print-only{display:block!important}
+  }
+  .print-only{display:none}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand">PAUSE DULU.</div>
+    <div class="progress-wrap"><span id="progressText">01 / 06</span><div class="progress"><i id="progressBar"></i></div></div>
+  </div>
+  <main class="screen" id="screen"></main>
+  <div class="footer-note">Bukan tes. Nggak ada nilai. Ini cuma tentang kamu.</div>
+</div>
+
+<script>
+const KEY="pauseDuluXI";
+const defaultState={
+  chapter:0, started:false, identity:{name:"",className:""}, now:{}, important:[], mostImportant:"",
+  time:{sleep:7,school:9,phone:2,study:2,other:4},
+  surprised:"",
+  thieves:[], mainThief:"",
+  change:"", start:"",
+  tracker:[false,false,false,false,false,false,false]
+};
+let state=JSON.parse(localStorage.getItem(KEY)||"null")||structuredClone(defaultState);
+
+const chapters=[
+  "GIMANA NIH?","YANG PENTING APA?","WAKTU GUE KE MANA?","SIAPA PENCURINYA?","MAU NGUBAH APA?","COBA 7 HARI"
+];
+
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+function setProgress(){
+  document.getElementById("progressText").textContent=`${String(state.chapter+1).padStart(2,"0")} / 06`;
+  document.querySelector(".progress i").style.width=((state.chapter+1)/6*100)+"%";
+}
+function answerChoices(key){
+  const answers=[
+    ["A","Iya, sudah cukup"],
+    ["B","Lumayan, tapi masih naik-turun"],
+    ["C","Belum cukup"],
+    ["D","Jauh dari yang seharusnya"]
+  ];
+  return `<div class="choices answer-grid">${answers.map(([letter,text])=>`
+    <button class="choice ${state.now[key]===letter?"selected":""}" onclick="pickNow('${key}','${letter}')">
+      <strong><span class="answer-letter">${letter}</span>${text}</strong>
+    </button>`).join("")}</div>`;
+}
+function pickNow(k,v){state.now[k]=v;save();render();}
+
+function render(){
+  setProgress();
+  const s=document.getElementById("screen");
+  s.innerHTML=state.started ? views[state.chapter]() : identityView();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function identityView(){return `<section class="card"><div class="chapter">PAUSE DULU.</div><h1>Hi.<br>Kenalan dulu.</h1><p>Ini bukan data buat nilai. Cuma supaya perjalanan ini terasa benar-benar punya kamu.</p><label>Nama</label><input id="nameInput" type="text" value="${esc(state.identity.name)}" placeholder="Nama kamu"><label>Kelas</label><input id="classInput" type="text" value="${esc(state.identity.className)}" placeholder="Contoh: XI IPA 2"><div style="height:18px"></div><div class="result"><b>Tenang.</b><p style="margin:7px 0 0;font-size:14px">Jawabanmu disimpan di browser ini supaya kamu bisa lanjut lagi nanti.</p></div><div class="nav"><span></span><button class="btn primary" onclick="saveIdentityAndStart()">Mulai →</button></div></section>`;}
+
+const views=[
+()=>`<section class="card">
+  <div class="chapter">01 — ${chapters[0]}</div>
+  <h1>Pause dulu.<br>Gimana nih?</h1>
+  <p>Hai, <b>${esc(state.identity.name)}</b> 👋 Sebelum mikirin masa depan, target, atau harus jadi apa… coba cek kamu yang sekarang.</p>
+
+  <div class="question-block">
+    <div class="question-title">Peminatan</div>
+    <p class="question-text">Seberapa nyaman dengan pilihan peminatanmu?</p>
+    ${answerChoices("minat")}
+  </div>
+
+  <div class="question-block">
+    <div class="question-title">Kelas XI</div>
+    <p class="question-text">Gimana rasanya menjalani kelas XI sejauh ini?</p>
+    ${answerChoices("kelas")}
+  </div>
+
+  <div class="question-block">
+    <div class="question-title">Arah setelah SMA</div>
+    <p class="question-text">Seberapa yakin dengan arah setelah SMA?</p>
+    ${answerChoices("arah")}
+  </div>
+
+  <div class="question-block">
+    <div class="question-title">Ngatur diri</div>
+    <p class="question-text">Seberapa mampu kamu mengatur waktu dan diri sendiri?</p>
+    ${answerChoices("atur")}
+  </div>
+
+  <p class="sub">Pilih satu jawaban di tiap bagian. Nggak ada jawaban benar atau salah.</p>
+  ${nav(false,!!state.now.minat&&!!state.now.kelas&&!!state.now.arah&&!!state.now.atur)}
+</section>`,
+
+()=>`<section class="card">
+  <div class="chapter">02 — ${chapters[1]}</div>
+  <h2>Yang penting apa?</h2>
+  <p>Pilih <b>5</b> hal yang paling berarti buatmu saat ini.</p>
+  <div class="grid value-grid">
+    ${["Keluarga","Teman","Prestasi","Kesehatan","Kebebasan","Ketenangan","Hobi","Kreativitas","Masa depan"].map(v=>`
+      <button class="choice value ${state.important.includes(v)?"selected":""}" onclick="toggleImportant('${v}')"><strong>${v}</strong></button>`).join("")}
+  </div>
+  <p class="sub">Terpilih: ${state.important.length}/5</p>
+  ${state.important.length===5?`<p><b>Sekarang, dari 5 ini… kalau cuma boleh satu?</b></p>
+  <div class="choices">${state.important.map(v=>`<button class="choice ${state.mostImportant===v?"selected":""}" onclick="state.mostImportant='${v}';save();render()"><strong>${v}</strong></button>`).join("")}</div>`:""}
+  ${nav(true,state.important.length===5&&!!state.mostImportant)}
+</section>`,
+
+()=>`<section class="card">
+  <div class="chapter">03 — ${chapters[2]}</div>
+  <h2>Waktu gue ke mana?</h2>
+  <p>Isi perkiraan waktumu dalam <b>satu hari</b>. Nggak perlu presisi banget. Yang penting jujur.</p>
+  ${counter("Tidur","sleep",24)}
+  ${counter("Sekolah + perjalanan","school",24)}
+  ${counter("HP / scrolling","phone",24)}
+  ${counter("Belajar / tugas","study",24)}
+  ${counter("Lainnya","other",24)}
+  ${(()=>{let total=Object.values(state.time).reduce((a,b)=>a+b,0);return `<div class="bar-wrap"><div class="bar-label"><b>Total</b><b class="${total===24?"total-ok":"total-bad"}">${total} / 24 jam</b></div><div class="bar"><i style="width:${Math.min(total/24*100,100)}%"></i></div></div>`})()}
+  ${state.time.sleep+state.time.school+state.time.phone+state.time.study+state.time.other===24?`
+  <p><b>Ada yang bikin kamu kaget?</b></p>
+  <div class="choices">${["Nggak","Sedikit","Iya","Banget 😭"].map(v=>`<button class="choice ${state.surprised===v?"selected":""}" onclick="state.surprised='${v}';save();render()"><strong>${v}</strong></button>`).join("")}</div>`:"<p class='sub'>Atur sampai totalnya 24 jam untuk lanjut.</p>"}
+  ${nav(true,Object.values(state.time).reduce((a,b)=>a+b,0)===24&&!!state.surprised)}
+</section>`,
+
+()=>`<section class="card">
+  <div class="chapter">04 — ${chapters[3]}</div>
+  <h2>Siapa pencurinya?</h2>
+  <p>Menurutmu, apa yang paling sering “mencuri” waktumu? Pilih maksimal <b>3</b>.</p>
+  <div class="thief-grid">
+    ${[["📱","HP"],["🛏️","Rebahan"],["🎮","Game"],["🍿","Nonton"],["💬","Chat"],["⏳","Menunda"],["😴","Tidur"],["🎒","Kegiatan"],["🚗","Perjalanan"]].map(([e,v])=>`
+      <button class="thief ${state.thieves.includes(v)?"selected":""}" onclick="toggleThief('${v}')"><span class="emoji">${e}</span>${v}</button>`).join("")}
+  </div>
+  <p class="sub">Terpilih: ${state.thieves.length}/3</p>
+  ${state.thieves.length?`<p><b>Dari ${state.thieves.length} ini, mana yang paling ingin kamu kendalikan?</b></p>
+  <div class="choices">${state.thieves.map(v=>`<button class="choice ${state.mainThief===v?"selected":""}" onclick="state.mainThief='${v}';save();render()"><strong>${v}</strong></button>`).join("")}</div>`:""}
+  ${nav(true,state.thieves.length>0&&!!state.mainThief)}
+</section>`,
+
+()=>`<section class="card">
+  <div class="chapter">05 — ${chapters[4]}</div>
+  <h2>Mau ngubah apa?</h2>
+  <p>Nggak perlu mengubah hidupmu. Pilih <b>satu perubahan kecil</b> yang realistis dilakukan selama 7 hari.</p>
+  <label>Satu perubahan yang mau aku coba</label>
+  <textarea id="changeInput" placeholder="Contoh: HP aku taruh di luar kamar saat belajar.">${esc(state.change)}</textarea>
+  <label>Aku mulai</label>
+  <input id="startInput" type="text" value="${esc(state.start)}" placeholder="Contoh: Senin, jam 19.00">
+  <div class="result" style="margin-top:22px">
+    <b>Yang aku temukan:</b>
+    <p style="margin:10px 0 0">Hal pentingku: <strong>${esc(state.mostImportant)}</strong><br>
+    Yang ingin kukendalikan: <strong>${esc(state.mainThief)}</strong></p>
+  </div>
+  ${nav(true,!!state.change.trim()&&!!state.start.trim())}
+</section>`,
+
+()=>`<section class="card">
+  <div class="chapter">06 — ${chapters[5]}</div>
+  <h2>7 HARI, 1 PERUBAHAN.</h2>
+  <p>Kamu nggak perlu sempurna. Cukup coba. Setiap hari, tandai kalau kamu sudah menjalankan perubahanmu.</p>
+  <div class="result">
+    <span class="tag">Hal penting: ${esc(state.mostImportant)}</span>
+    <span class="tag">Pencuri utama: ${esc(state.mainThief)}</span>
+    <p style="margin-top:15px"><b>${esc(state.change)}</b><br><span class="sub">Mulai: ${esc(state.start)}</span></p>
+  </div>
+  <div class="tracker">
+    ${["Sen","Sel","Rab","Kam","Jum","Sab","Min"].map((d,i)=>`<div class="day ${state.tracker[i]?"done":""}"><b>${d}</b><button onclick="toggleDay(${i})">${state.tracker[i]?"✓":"○"}</button></div>`).join("")}
+  </div>
+  <div class="result">
+    <h3 style="margin:0 0 8px">PETA DIRIKU</h3>
+    <p style="margin:0">Yang penting buatku: <b>${esc(state.mostImportant)}</b><br>
+    Yang ingin aku perbaiki: <b>${esc(state.mainThief)}</b><br>
+    Satu perubahan minggu ini: <b>${esc(state.change)}</b></p>
+  </div>
+  <div class="result print-only" style="margin-top:22px">
+    <h3 style="margin:0 0 12px">CATATAN AKHIR</h3>
+    <p style="margin:0;font-size:14px">Nama: <b>${esc(state.identity.name)}</b><br>
+    Kelas: <b>${esc(state.identity.className)}</b></p>
+  </div>
+  <div class="nav"><button class="btn secondary" onclick="go(-1)">← Kembali</button><button class="btn primary" onclick="downloadPDF()">⬇ Simpan sebagai PDF</button></div>
+  <div style="text-align:center;margin-top:12px;color:#777;font-size:12px">PDF berisi ringkasan jawabanmu dari perjalanan ini.</div>
+</section>`
+];
+
+function nav(back,enabled){
+  return `<div class="nav">${back?`<button class="btn secondary" onclick="go(-1)">← Kembali</button>`:`<span></span>`}<button class="btn primary" ${enabled?"":"disabled"} onclick="go(1)">Lanjut →</button></div>`;
+}
+function go(d){
+  if(state.chapter===4){
+    state.change=document.getElementById("changeInput").value;
+    state.start=document.getElementById("startInput").value;
+  }
+  state.chapter=Math.max(0,Math.min(5,state.chapter+d));save();render();
+}
+function toggleImportant(v){
+  if(state.important.includes(v)) state.important=state.important.filter(x=>x!==v);
+  else if(state.important.length<5) state.important.push(v);
+  if(!state.important.includes(state.mostImportant)) state.mostImportant="";
+  save();render();
+}
+function counter(name,key,max){
+  return `<div class="counter"><div class="counter-name">${name}</div><div class="counter-controls">
+    <button class="circle" onclick="changeTime('${key}',-1)">−</button><span class="num">${state.time[key]}</span><button class="circle" onclick="changeTime('${key}',1)">+</button>
+  </div></div>`;
+}
+function changeTime(k,d){state.time[k]=Math.max(0,Math.min(24,state.time[k]+d));save();render();}
+function toggleThief(v){
+  if(state.thieves.includes(v)) state.thieves=state.thieves.filter(x=>x!==v);
+  else if(state.thieves.length<3) state.thieves.push(v);
+  if(!state.thieves.includes(state.mainThief)) state.mainThief="";
+  save();render();
+}
+function toggleDay(i){state.tracker[i]=!state.tracker[i];save();render();}
+function saveIdentityAndStart(){const name=document.getElementById("nameInput").value.trim();const className=document.getElementById("classInput").value.trim();if(!name||!className){alert("Isi nama dan kelas dulu ya 🙂");return;}state.identity={name,className};state.started=true;save();render();}
+function downloadPDF(){
+  // Browser akan membuka dialog cetak. Pilih "Save as PDF" / "Simpan sebagai PDF".
+  window.print();
+}
+function resetAll(){if(confirm("Mulai lagi dari awal? Jawabanmu akan dihapus dari browser ini.")){state=structuredClone(defaultState);save();render();}}
+
+render();
+</script>
+</body>
+</html>
